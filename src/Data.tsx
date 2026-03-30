@@ -97,7 +97,7 @@ export const SKILLS = [
 export const TOOLS = [
   {
     id: 0,
-    tools: "Visual Studio Code",
+    tools: "Antigravity",
     icon: BiLogoVisualStudio,
     color: "text-blue-400",
   },
@@ -171,7 +171,7 @@ export const PROJECTS = [
       "Figma",
       "GitHub",
       "npm",
-      "Visual Studio Code",
+      "Antigravity",
       "Android Studio",
       "Xcode",
       "Postman",
@@ -179,6 +179,41 @@ export const PROJECTS = [
   },
   {
     id: 1,
+    title: "Offline e₹ App",
+    github: "",
+    description:
+      "Developed an offline e₹ payment application enabling secure digital transactions without internet, improving accessibility and usability in low-connectivity environments.",
+    image: "/Image/offline.jpeg",
+    SkillsTools: [
+      "React Native",
+      "Figma",
+      "GitHub",
+      "npm",
+      "Antigravity",
+      "Android Studio",
+      "Xcode",
+    ],
+  },
+  {
+    id: 3,
+    title: "Finguard AI",
+    github: "",
+    description:
+      "Finguard AI is a comprehensive financial management application designed to help users track expenses, manage budgets, and gain insights into their spending habits. The app features secure login, transaction tracking, budget planning, and visual analytics to promote financial wellness.",
+    image: "/Image/finguard.png",
+    SkillsTools: [
+      "Next JS",
+      "Nest JS",
+      "Figma",
+      "GitHub",
+      "npm",
+      "Antigravity",
+      "Postman",
+      "PostgreSQL",
+    ],
+  },
+  {
+    id: 4,
     title: "Note App",
     github: "https://github.com/Elakkiya-S-28/NoteApps",
     description:
@@ -189,13 +224,13 @@ export const PROJECTS = [
       "Figma",
       "GitHub",
       "npm",
-      "Visual Studio Code",
+      "Antigravity",
       "Android Studio",
       "Xcode",
     ],
   },
   {
-    id: 2,
+    id: 5,
     title: "Lucky Pick",
     github: "https://github.com/Elakkiya-S-28/LuckyPick",
     description:
@@ -206,13 +241,13 @@ export const PROJECTS = [
       "Figma",
       "GitHub",
       "npm",
-      "Visual Studio Code",
+      "Antigravity",
       "Android Studio",
       "Xcode",
     ],
   },
   {
-    id: 3,
+    id: 6,
     title: "Tic Tac Toe",
     github: "https://github.com/Elakkiya-S-28/Tic-Tac-Toe",
     description:
@@ -223,7 +258,7 @@ export const PROJECTS = [
       "Figma",
       "GitHub",
       "npm",
-      "Visual Studio Code",
+      "Antigravity",
       "Android Studio",
       "Xcode",
     ],
