@@ -22,6 +22,16 @@ export default function Main() {
     { name: "Contact", href: "#contacts" },
   ];
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    const targetId = href.replace(/.*#/, "");
+    const elem = document.getElementById(targetId);
+    if (elem) {
+      elem.scrollIntoView({ behavior: "smooth" });
+    }
+    setIsMobileMenuOpen(false);
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -62,6 +72,7 @@ export default function Main() {
               <a
                 key={link.name}
                 href={link.href}
+                onClick={(e) => handleNavClick(e, link.href)}
                 className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-white transition-colors relative group"
               >
                 {link.name}
@@ -93,7 +104,7 @@ export default function Main() {
                   <a
                     key={link.name}
                     href={link.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={(e) => handleNavClick(e, link.href)}
                     className="text-2xl font-semibold text-slate-300 hover:text-indigo-400 transition-colors"
                   >
                     {link.name}
