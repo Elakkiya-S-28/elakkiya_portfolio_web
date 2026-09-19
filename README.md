@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Elakkiya Selvarajan — portfolio (Next.js + R3F)
 
-## Getting Started
+Same design, copy and scroll behaviour as the single-file build, restructured
+as an editable Next.js project. The 3D layer uses React Three Fiber + Drei
+instead of raw Three.js, and GSAP ScrollTrigger + Lenis drive both the scroll
+feel and the scene.
 
-First, run the development server:
+## Run it
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000. `npm run build && npm run start` for a
+production check (this is what was used to verify the project builds clean).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/
+  layout.js       fonts + <html>/<body>, metadata
+  globals.css     all design tokens + section styles (unchanged from the original)
+  page.js         assembles the sections + mounts the 3D Stage (client-only)
 
-## Learn More
+components/       the UI, one file per section — edit copy/markup here
+  Nav.jsx  Hero.jsx  Approach.jsx  Work.jsx  Toolkit.jsx  Experience.jsx  Contact.jsx  Footer.jsx
 
-To learn more about Next.js, take a look at the following resources:
+canvas/           the 3D layer
+  Stage.jsx       <Canvas> wrapper, renderer + tone-mapping settings
+  Scene.jsx       composes environment/lighting/camera + the five acts
+  Lighting.jsx    key/rim/bounce lights; rim tracks the CSS --accent variable
+  CameraRig.jsx   shot list sampled by scroll position (edit SHOTS here)
+  Colonnade.jsx   Act 1+2: hero architecture that morphs into the journey corridor
+  Device.jsx      Act 3: the Aayush phone + watch, live canvas-drawn screens
+  Lattice.jsx     Act 4: the technology lattice (edit TECH here)
+  CareerPath.jsx  Act 5: the career-progression rail (edit STOPS here)
+  materials.js    shared PBR materials
+  textures.js     canvas-drawn plaque/phone/watch textures
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+lib/
+  scrollState.js       plain mutable object the 3D loop reads every frame —
+                        not React state, so scrolling never re-renders React
+  useScrollDirector.js  wires Lenis + GSAP ScrollTrigger, writes into scrollState,
+                        drives the --accent hue travel and the spine fill
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Editing the 3D
 
-## Deploy on Vercel
+Each act is its own file under `canvas/`. The pattern in every act is the
+same: a `HOME`/`FIN` vector pair for where it sits normally vs. in the
+Contact-section finale, a `reveal` ref smoothed from `scrollState.targets.*`
+each frame, and geometry built with `useMemo` so it isn't rebuilt every
+render. Change camera framing in `CameraRig.jsx`'s `SHOTS` array — each entry
+lines up by index with `hero / approach / work / toolkit / experience /
+contact` in DOM order.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Notes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `Stage` is loaded with `next/dynamic` and `ssr: false` — the 3D layer
+  touches `window`/canvas and must never run server-side.
+- `Environment preset="apartment"` (drei) replaces the manual
+  `PMREMGenerator(RoomEnvironment)` from the single-file build; same effect,
+  fewer lines.
+- Reduced-motion users skip Lenis entirely and get a static, undamped scene
+  (see `useScrollDirector.js` and `CameraRig.jsx`).
