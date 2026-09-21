@@ -1,6 +1,6 @@
 export default function Approach() {
   return (
-    <section className="band" id="approach">
+    <section className="band zig-r" id="approach">
       <div className="wrap approach">
         <blockquote className="quote">
           I build digital bridges between what people need and what the <em>machine can do</em>.

@@ -4,7 +4,6 @@ function getAccent() {
   if (typeof window === 'undefined') return '#9aa7ff'
   return getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#9aa7ff'
 }
-
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath()
   ctx.roundRect(x, y, w, h, r)
@@ -17,9 +16,9 @@ export function makePlaqueMaterial(title, size, sub) {
   c.height = 208
   const x = c.getContext('2d')
   const g = x.createLinearGradient(0, 0, 0, 208)
-  g.addColorStop(0, '#3b3744')
-  g.addColorStop(0.5, '#2b2833')
-  g.addColorStop(1, '#1e1c25')
+  g.addColorStop(0, '#34303d')
+  g.addColorStop(0.5, '#242129')
+  g.addColorStop(1, '#181620')
   x.fillStyle = g
   x.fillRect(0, 0, 768, 208)
   for (let i = 0; i < 420; i++) {
@@ -30,7 +29,7 @@ export function makePlaqueMaterial(title, size, sub) {
     x.lineTo(768, y)
     x.stroke()
   }
-  x.fillStyle = '#efe9e2'
+  x.fillStyle = '#f7f2ea'
   x.font = `600 ${size * 1.55}px "Bricolage Grotesque", system-ui, sans-serif`
   x.textBaseline = 'middle'
   x.fillText(title, 40, sub ? 78 : 104)
@@ -49,7 +48,7 @@ export function makePlaqueMaterial(title, size, sub) {
 export function createPhoneScreen() {
   const canvas = document.createElement('canvas')
   canvas.width = 720
-  canvas.height = 1480
+  canvas.height = 1552
   const ctx = canvas.getContext('2d')
   const texture = new THREE.CanvasTexture(canvas)
   texture.colorSpace = THREE.SRGBColorSpace
@@ -58,63 +57,80 @@ export function createPhoneScreen() {
   function draw(i) {
     const x = ctx
     const W = 720
-    const H = 1480
+    const H = 1552
     const A = getAccent()
+    x.clearRect(0, 0, W, H)
+    // rounded-corner mask: the screen's corners follow the body silhouette
+    x.save()
+    x.beginPath()
+    x.roundRect(0, 0, W, H, 60)
+    x.clip()
     const g = x.createLinearGradient(0, 0, 0, H)
     g.addColorStop(0, '#191327')
     g.addColorStop(1, '#2e1f2b')
     x.fillStyle = g
     x.fillRect(0, 0, W, H)
 
-    x.fillStyle = 'rgba(243,238,231,0.5)'
-    x.font = '500 30px "Instrument Sans", sans-serif'
-    x.fillText('9:41', 48, 74)
-    x.fillText('ABHA linked', 470, 74)
+    // status row: time left, Dynamic Island centre, signal + battery right
+    x.fillStyle = 'rgba(243,238,231,0.6)'
+    x.font = '500 38px "Instrument Sans", sans-serif'
+    x.fillText('9:41', 44, 82)
+    x.fillStyle = '#06050a'
+    roundRect(x, 252, 22, 216, 60, 30)
+    x.fill()
+    x.fillStyle = 'rgba(243,238,231,0.75)'
+    x.fillRect(560, 50, 7, 18)
+    x.fillRect(572, 42, 7, 26)
+    x.strokeStyle = 'rgba(243,238,231,0.6)'
+    x.lineWidth = 3
+    roundRect(x, 600, 40, 58, 30, 9)
+    x.stroke()
+    x.fillRect(605, 45, 40, 20)
 
     x.fillStyle = '#f3eee7'
-    x.font = '600 58px "Bricolage Grotesque", sans-serif'
-    x.fillText('Aayush', 48, 180)
+    x.font = '600 76px "Bricolage Grotesque", sans-serif'
+    x.fillText('Aayush', 44, 198)
 
     if (i === 0) {
-      x.fillStyle = 'rgba(243,238,231,0.55)'
-      x.font = '400 32px "Instrument Sans", sans-serif'
-      x.fillText('Upcoming appointments', 48, 236)
+      x.fillStyle = 'rgba(243,238,231,0.6)'
+      x.font = '500 42px "Instrument Sans", sans-serif'
+      x.fillText('Upcoming appointments', 48, 268)
       const docs = [
         ['Dr. Anita Rao', 'Cardiology · Today 10:30'],
         ['Dr. S. Menon', 'General · Fri 09:00'],
         ['Dr. K. Iyer', 'Dermatology · 24 Sep'],
       ]
       docs.forEach((d, n) => {
-        const y = 300 + n * 200
+        const y = 330 + n * 220
         x.fillStyle = 'rgba(243,238,231,0.06)'
-        roundRect(x, 48, y, 624, 168, 34)
+        roundRect(x, 44, y, 632, 192, 38)
         x.fill()
         x.strokeStyle = 'rgba(243,238,231,0.12)'
         x.stroke()
         x.fillStyle = A
-        roundRect(x, 82, y + 44, 80, 80, 40)
+        roundRect(x, 78, y + 51, 90, 90, 45)
         x.fill()
         x.fillStyle = '#f3eee7'
-        x.font = '600 38px "Instrument Sans", sans-serif'
-        x.fillText(d[0], 196, y + 72)
-        x.fillStyle = 'rgba(243,238,231,0.55)'
-        x.font = '400 30px "Instrument Sans", sans-serif'
-        x.fillText(d[1], 196, y + 118)
+        x.font = '600 50px "Instrument Sans", sans-serif'
+        x.fillText(d[0], 200, y + 86)
+        x.fillStyle = 'rgba(243,238,231,0.6)'
+        x.font = '400 40px "Instrument Sans", sans-serif'
+        x.fillText(d[1], 200, y + 142)
       })
       x.fillStyle = A
-      roundRect(x, 48, 940, 624, 108, 54)
+      roundRect(x, 44, 1030, 632, 124, 62)
       x.fill()
       x.fillStyle = '#16121c'
-      x.font = '600 36px "Instrument Sans", sans-serif'
-      x.fillText('Book an appointment', 150, 1002)
+      x.font = '600 48px "Instrument Sans", sans-serif'
+      x.fillText('Book an appointment', 132, 1104)
     }
 
     if (i === 1) {
-      x.fillStyle = 'rgba(243,238,231,0.55)'
-      x.font = '400 32px "Instrument Sans", sans-serif'
-      x.fillText('Appointment pass', 48, 236)
+      x.fillStyle = 'rgba(243,238,231,0.6)'
+      x.font = '500 42px "Instrument Sans", sans-serif'
+      x.fillText('Appointment pass', 48, 262)
       x.fillStyle = '#f3eee7'
-      roundRect(x, 96, 300, 528, 528, 40)
+      roundRect(x, 76, 300, 568, 568, 44)
       x.fill()
       let seed = 7
       for (let a = 0; a < 21; a++) {
@@ -122,71 +138,72 @@ export function createPhoneScreen() {
           seed = (seed * 1103515245 + 12345) % 2147483648
           if ((seed >> 7) % 3 === 0) {
             x.fillStyle = '#16121c'
-            x.fillRect(136 + a * 22, 340 + b * 22, 20, 20)
+            x.fillRect(116 + a * 24, 340 + b * 24, 22, 22)
           }
         }
       }
       x.fillStyle = '#16121c'
-      x.fillRect(300, 528, 120, 72)
+      x.fillRect(295, 546, 130, 76)
       x.fillStyle = '#f3eee7'
-      x.font = '600 42px "Bricolage Grotesque", sans-serif'
-      x.fillText('Dr. Anita Rao', 96, 920)
-      x.fillStyle = 'rgba(243,238,231,0.55)'
-      x.font = '400 32px "Instrument Sans", sans-serif'
-      x.fillText('Today · 10:30 · Block C, Room 214', 96, 976)
+      x.font = '600 56px "Bricolage Grotesque", sans-serif'
+      x.fillText('Dr. Anita Rao', 96, 948)
+      x.fillStyle = 'rgba(243,238,231,0.6)'
+      x.font = '400 42px "Instrument Sans", sans-serif'
+      x.fillText('Today · 10:30 · Room 214', 96, 1014)
       x.fillStyle = A
-      roundRect(x, 96, 1030, 300, 78, 39)
+      roundRect(x, 96, 1056, 360, 96, 48)
       x.fill()
       x.fillStyle = '#16121c'
-      x.font = '600 32px "Instrument Sans", sans-serif'
-      x.fillText('Send to watch', 132, 1078)
+      x.font = '600 44px "Instrument Sans", sans-serif'
+      x.fillText('Send to watch', 148, 1116)
     }
 
     if (i === 2) {
-      x.fillStyle = 'rgba(243,238,231,0.55)'
-      x.font = '400 32px "Instrument Sans", sans-serif'
-      x.fillText('Medicine reminders', 48, 236)
+      x.fillStyle = 'rgba(243,238,231,0.6)'
+      x.font = '500 42px "Instrument Sans", sans-serif'
+      x.fillText('Medicine reminders', 48, 262)
       const meds = [
         ['Metformin', '500 mg · 08:00', true],
         ['Atorvastatin', '10 mg · 14:00', true],
         ['Vitamin D3', 'weekly · 20:00', false],
       ]
       meds.forEach((m, n) => {
-        const y = 300 + n * 180
+        const y = 320 + n * 200
         x.fillStyle = 'rgba(243,238,231,0.06)'
-        roundRect(x, 48, y, 624, 148, 32)
+        roundRect(x, 44, y, 632, 168, 36)
         x.fill()
         x.strokeStyle = 'rgba(243,238,231,0.12)'
         x.stroke()
         x.beginPath()
-        x.arc(118, y + 74, 30, 0, Math.PI * 2)
+        x.arc(118, y + 84, 36, 0, Math.PI * 2)
         if (m[2]) {
           x.fillStyle = A
           x.fill()
         } else {
           x.strokeStyle = 'rgba(243,238,231,0.35)'
-          x.lineWidth = 3
+          x.lineWidth = 4
           x.stroke()
         }
         x.fillStyle = '#f3eee7'
-        x.font = '600 36px "Instrument Sans", sans-serif'
-        x.fillText(m[0], 176, y + 62)
-        x.fillStyle = 'rgba(243,238,231,0.55)'
-        x.font = '400 28px "Instrument Sans", sans-serif'
-        x.fillText(m[1], 176, y + 106)
+        x.font = '600 48px "Instrument Sans", sans-serif'
+        x.fillText(m[0], 192, y + 74)
+        x.fillStyle = 'rgba(243,238,231,0.6)'
+        x.font = '400 38px "Instrument Sans", sans-serif'
+        x.fillText(m[1], 192, y + 126)
       })
       x.fillStyle = 'rgba(243,238,231,0.06)'
-      roundRect(x, 48, 880, 624, 200, 34)
+      roundRect(x, 44, 960, 632, 230, 38)
       x.fill()
       x.fillStyle = '#f3eee7'
-      x.font = '600 36px "Instrument Sans", sans-serif'
-      x.fillText('Upload report', 90, 950)
-      x.fillStyle = 'rgba(243,238,231,0.5)'
-      x.font = '400 28px "Instrument Sans", sans-serif'
-      x.fillText('Scans and prescriptions, stored', 90, 1000)
-      x.fillText('against your ABHA record.', 90, 1040)
+      x.font = '600 48px "Instrument Sans", sans-serif'
+      x.fillText('Upload report', 88, 1036)
+      x.fillStyle = 'rgba(243,238,231,0.6)'
+      x.font = '400 38px "Instrument Sans", sans-serif'
+      x.fillText('Scans and prescriptions, stored', 88, 1098)
+      x.fillText('against your ABHA record.', 88, 1150)
     }
 
+    x.restore()
     texture.needsUpdate = true
   }
 
@@ -197,40 +214,70 @@ export function createPhoneScreen() {
 export function createWatchScreen() {
   const canvas = document.createElement('canvas')
   canvas.width = 360
-  canvas.height = 420
+  canvas.height = 440
   const ctx = canvas.getContext('2d')
   const texture = new THREE.CanvasTexture(canvas)
   texture.colorSpace = THREE.SRGBColorSpace
+  texture.anisotropy = 4
 
   function draw() {
     const x = ctx
     const A = getAccent()
-    x.fillStyle = '#16121c'
-    x.fillRect(0, 0, 360, 420)
-    x.fillStyle = 'rgba(243,238,231,0.5)'
-    x.font = '400 22px "Instrument Sans", sans-serif'
-    x.fillText('Next', 30, 60)
-    x.fillStyle = '#f3eee7'
-    x.font = '600 44px "Bricolage Grotesque", sans-serif'
-    x.fillText('10:30', 30, 120)
-    x.font = '400 24px "Instrument Sans", sans-serif'
-    x.fillStyle = 'rgba(243,238,231,0.7)'
-    x.fillText('Dr. Anita Rao', 30, 166)
-    x.fillStyle = '#f3eee7'
-    roundRect(x, 30, 200, 300, 180, 24)
-    x.fill()
-    let s = 11
-    for (let a = 0; a < 12; a++) {
-      for (let b = 0; b < 7; b++) {
-        s = (s * 1103515245 + 12345) % 2147483648
-        if ((s >> 9) % 3 === 0) {
-          x.fillStyle = '#16121c'
-          x.fillRect(48 + a * 22, 218 + b * 22, 18, 18)
-        }
-      }
-    }
+    x.clearRect(0, 0, 360, 440)
+    // squircle mask: the face's corners stay transparent so the plane reads
+    // as part of the rounded case instead of a card pasted on it
+    x.save()
+    x.beginPath()
+    x.roundRect(0, 0, 360, 440, 96)
+    x.clip()
+
+    const g = x.createLinearGradient(0, 0, 0, 440)
+    g.addColorStop(0, '#181322')
+    g.addColorStop(1, '#0d0a13')
+    x.fillStyle = g
+    x.fillRect(0, 0, 360, 440)
+
+    // date + the classic 10:09
     x.fillStyle = A
-    x.fillRect(30, 392, 90, 6)
+    x.font = '600 22px "Instrument Sans", sans-serif'
+    x.fillText('TUE 24', 30, 56)
+    x.fillStyle = '#f3eee7'
+    x.font = '600 84px "Bricolage Grotesque", sans-serif'
+    x.fillText('10:09', 26, 148)
+
+    // activity rings
+    const cx = 250
+    const cy = 296
+    ;[
+      ['#ff375f', 62, 0.86],
+      ['#9ef01a', 44, 0.64],
+      [A, 26, 0.45],
+    ].forEach(([col, r, k]) => {
+      x.lineWidth = 13
+      x.strokeStyle = 'rgba(255,255,255,0.1)'
+      x.lineCap = 'butt'
+      x.beginPath()
+      x.arc(cx, cy, r, 0, Math.PI * 2)
+      x.stroke()
+      x.strokeStyle = col
+      x.lineCap = 'round'
+      x.beginPath()
+      x.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * k)
+      x.stroke()
+    })
+
+    // next-appointment complication
+    x.fillStyle = 'rgba(243,238,231,0.08)'
+    roundRect(x, 26, 368, 236, 48, 24)
+    x.fill()
+    x.fillStyle = '#f3eee7'
+    x.font = '600 24px "Instrument Sans", sans-serif'
+    x.fillText('10:30', 46, 400)
+    x.fillStyle = 'rgba(243,238,231,0.6)'
+    x.font = '400 20px "Instrument Sans", sans-serif'
+    x.fillText('Dr. Rao · Cardio', 116, 400)
+
+    x.restore()
     texture.needsUpdate = true
   }
 

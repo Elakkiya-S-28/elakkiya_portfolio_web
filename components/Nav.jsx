@@ -5,6 +5,7 @@ export default function Nav() {
         Elakkiya Selvarajan <span>— mobile &amp; web</span>
       </a>
       <nav className="bar__links" aria-label="Sections">
+        <a href="#hero" className="keep">Home</a>
         <a href="#work" className="keep">Work</a>
         <a href="#toolkit">Toolkit</a>
         <a href="#experience">Experience</a>

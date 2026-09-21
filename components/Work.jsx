@@ -57,7 +57,7 @@ const PROJECTS = [
 
 export default function Work() {
   return (
-    <section className="band" id="work">
+    <section className="band zig-l" id="work">
       <div className="wrap">
         <div className="head">
           <h2>Selected work</h2>
@@ -71,22 +71,22 @@ export default function Work() {
                 <b>{p.tag}</b>
                 {p.meta}
               </div>
-              <div>
+              <div className="proj__main">
                 <h3>{p.title}</h3>
                 <p className="proj__what">{p.what}</p>
-              </div>
-              <div className="proj__body">
-                <p>{p.body}</p>
-                <ul className="stack">
-                  {p.stack.map((s) => (
-                    <li key={s}>{s}</li>
-                  ))}
-                </ul>
-                {p.link && (
-                  <a className="proj__link" href={p.link} target="_blank" rel="noopener noreferrer">
-                    Source on GitHub
-                  </a>
-                )}
+                <div className="proj__body">
+                  <p>{p.body}</p>
+                  <ul className="stack">
+                    {p.stack.map((s) => (
+                      <li key={s}>{s}</li>
+                    ))}
+                  </ul>
+                  {p.link && (
+                    <a className="proj__link" href={p.link} target="_blank" rel="noopener noreferrer">
+                      Source on GitHub
+                    </a>
+                  )}
+                </div>
               </div>
             </article>
           ))}

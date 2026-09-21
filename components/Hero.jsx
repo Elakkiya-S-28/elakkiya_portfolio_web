@@ -1,6 +1,6 @@
 export default function Hero() {
   return (
-    <section className="band hero" id="hero">
+    <section className="band hero zig-l" id="hero">
       <div className="wrap">
         <p className="status lift">
           <i aria-hidden="true"></i> Available for new projects

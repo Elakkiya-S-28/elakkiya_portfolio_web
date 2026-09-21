@@ -105,22 +105,84 @@ a { color: inherit; text-decoration: none; }
   padding: 18px var(--gutter);
   font-size: 13px;
   letter-spacing: 0.01em;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  background: linear-gradient(180deg, rgba(14, 18, 32, 0.72), rgba(14, 18, 32, 0));
+  /* fully transparent — the 3D stage shows through; nav legibility comes
+     from text-shadow, not scrims or backdrop blur */
 }
-.bar__name { font-family: var(--display); font-weight: 600; font-size: 15px; letter-spacing: -0.02em; }
+.bar__name { font-family: var(--display); font-weight: 600; font-size: 15px; letter-spacing: -0.02em; text-shadow: 0 1px 2px rgba(9, 11, 20, 0.62), 0 0 14px rgba(9, 11, 20, 0.4); }
 .bar__name span { color: var(--chalk-45); font-weight: 400; }
 .bar__links { display: flex; gap: 20px; color: var(--chalk-45); }
-.bar__links a { transition: color 0.25s var(--ease); }
+.bar__links a { transition: color 0.25s var(--ease); text-shadow: 0 1px 2px rgba(9, 11, 20, 0.62), 0 0 14px rgba(9, 11, 20, 0.4); }
 .bar__links a:hover { color: var(--chalk); }
 .bar__links a.is-here { color: var(--accent); }
 @media (max-width: 720px) { .bar__links a:not(.keep) { display: none; } }
+/* very small screens: keep the bar on one line with Home + Work + Contact —
+   drop the name's tagline and tighten the gaps instead of wrapping */
+@media (max-width: 560px) {
+  .bar { gap: 12px; }
+  .bar__name span { display: none; }
+  .bar__links { gap: 14px; }
+}
 
 main { padding-left: var(--rail); }
 
 .band { padding: clamp(80px, 12vh, 150px) var(--gutter); }
 .wrap { max-width: 1180px; margin: 0 auto; }
+
+/* ---- Zigzag layout ----------------------------------------------------
+   Each band pins its text/content rail to the left (.zig-l) or right
+   (.zig-r) half of the viewport. The full-bleed 3D canvas stays fixed
+   behind everything and CameraRig frames each act into the OPPOSITE half,
+   so text and the 3D visual alternate sides as you scroll.
+   Text areas are fully transparent — the 3D shows through them. All
+   readability comes from typography: spacing, contrast and layered text
+   shadows (no washes, no blur, no blocks). ----------------------------- */
+
+@media (min-width: 900px) {
+  .zig-l .wrap { width: min(47vw, 680px); margin: 0 auto 0 0; }
+  .zig-r .wrap { width: min(47vw, 680px); margin: 0 0 0 auto; }
+
+  /* narrow-rail refinements so the existing layouts keep breathing */
+  .zig-l .approach, .zig-r .approach { grid-template-columns: 1fr; align-items: start; }
+  .zig-l .approach .quote, .zig-r .approach .quote { max-width: 36ch; }
+  .zig-l .proj__body, .zig-r .proj__body { max-width: 54ch; }
+  .zig-l .proj__what, .zig-r .proj__what { max-width: 40ch; }
+  .zig-l .role, .zig-r .role { grid-template-columns: minmax(0, 12rem) minmax(0, 1fr); }
+}
+
+/* stage room: on desktop every act gets a full-height band so the framed 3D
+   has its own half to live in — vertical space, not background blocks */
+@media (min-width: 900px) {
+  .band:not(.hero) { min-height: 92vh; display: grid; align-content: center; }
+}
+
+/* stacked zigzag on small screens: the text rail reads first, then a
+   reserved visual stage under it where the parked act breathes */
+@media (max-width: 899px) {
+  .band { padding-bottom: clamp(170px, 30vh, 280px); }
+}
+
+/* readability over the fully transparent rails: layered text shadows lift
+   every text element off the live 3D behind it — dark soft shadows read as
+   depth, not as a background block */
+.zig-l h1, .zig-r h1,
+.zig-l h2, .zig-r h2,
+.zig-l h3, .zig-r h3,
+.zig-l .quote, .zig-r .quote,
+.zig-l .contact__mail, .zig-r .contact__mail,
+.zig-l .fact dd, .zig-r .fact dd,
+.zig-l .proj__what, .zig-r .proj__what,
+.zig-l .proj__body, .zig-r .proj__body,
+.zig-l .proj__meta, .zig-r .proj__meta,
+.zig-l .stack li, .zig-r .stack li,
+.zig-l .proj__link, .zig-r .proj__link,
+.zig-l p, .zig-r p,
+.zig-l .kit li, .zig-r .kit li,
+.zig-l .fact dt, .zig-r .fact dt,
+.zig-l .role__when, .zig-r .role__when,
+.zig-l .status, .zig-r .status,
+.zig-l .head p, .zig-r .head p {
+  text-shadow: 0 1px 2px rgba(9, 11, 20, 0.62), 0 0 20px rgba(9, 11, 20, 0.34);
+}
 
 .hero { min-height: 100svh; display: flex; align-items: center; padding-top: 110px; }
 .status { display: inline-flex; align-items: center; gap: 9px; font-size: 13px; color: var(--chalk-70); }
@@ -206,7 +268,7 @@ h2 {
   grid-template-columns: 1fr;
 }
 @media (min-width: 880px) {
-  .proj { grid-template-columns: minmax(0, 8.5rem) minmax(0, 1fr) minmax(0, 1.05fr); align-items: start; }
+  .proj { grid-template-columns: minmax(0, 8.5rem) minmax(0, 1fr); align-items: start; }
 }
 .proj__meta { font-size: 13px; color: var(--chalk-45); line-height: 1.5; }
 .proj__meta b { display: block; color: var(--chalk-70); font-weight: 500; }

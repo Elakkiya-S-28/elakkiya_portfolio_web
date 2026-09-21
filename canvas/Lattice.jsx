@@ -8,32 +8,59 @@ import { makePlaqueMaterial } from './textures'
 import { scrollState } from '@/lib/scrollState'
 
 const smooth = (v) => v * v * (3 - 2 * v)
-const HOME = new THREE.Vector3(2.6, 0.6, 0)
-const FIN = new THREE.Vector3(3.4, 2.4, -6)
+// Lattice lives in the LEFT half (the Toolkit text rail owns the right half
+// in the zigzag), pulled close to the camera so the skill plaques read big
+// and bright. A flat 3x4 constellation wall — not a ball — because a ±4
+// world sphere can never fit between the frame edge and the midline; the
+// wall's ~4.7-world span fits its half-column at this depth. For the contact
+// finale it drifts deeper left-up as a backdrop.
+const HOME = new THREE.Vector3(-6.0, 1.5, 7.0)
+const FIN = new THREE.Vector3(-9.5, 3.0, -8.0)
 
 const TECH = ['React Native', 'React', 'TypeScript', 'JavaScript', 'Next.js', 'NestJS', 'Swift', 'SQL', 'Firebase', 'Git', 'C++', 'Figma']
+
+// 3 columns x 4 rows, yawed toward the camera, with deterministic z jitter
+// for parallax depth. Index = row * 3 + col.
+const COLS = [-2.35, 0, 2.35]
+const ROWS = [-2.55, -0.85, 0.85, 2.55]
 
 export default function Lattice() {
   const group = useRef()
   const reveal = useRef(0)
 
-  const nodes = useMemo(() => {
-    const r = 3.4
-    return TECH.map((_, i) => {
-      const t = (i + 0.5) / TECH.length
-      const phi = Math.acos(1 - 2 * t)
-      const theta = Math.PI * (1 + Math.sqrt(5)) * i
-      return new THREE.Vector3(r * Math.sin(phi) * Math.cos(theta), r * Math.cos(phi) * 0.75, r * Math.sin(phi) * Math.sin(theta))
-    })
-  }, [])
+  const nodes = useMemo(
+    () =>
+      ROWS.flatMap((y, r) =>
+        COLS.map((x, c) => {
+          const j = Math.sin((r * 3 + c) * 12.9898) * 43758.5453
+          const jitter = (j - Math.floor(j)) * 0.6 - 0.3
+          return new THREE.Vector3(x, y, jitter)
+        })
+      ),
+    []
+  )
 
-  const plaqueMats = useMemo(() => TECH.map((name) => makePlaqueMaterial(name, 44)), [])
+  // Bigger canvases (56px etch) + a brighter, less mirror-like finish so the
+  // skill names read clearly even with the act parked deep in the frame.
+  const plaqueMats = useMemo(
+    () =>
+      TECH.map((name) => {
+        const m = makePlaqueMaterial(name, 56)
+        m.roughness = 0.34
+        m.envMapIntensity = 2.1
+        return m
+      }),
+    []
+  )
 
   const struts = useMemo(() => {
     const pairs = []
-    for (let i = 0; i < nodes.length; i++) {
-      pairs.push([i, (i + 1) % nodes.length])
-      pairs.push([i, (i + 5) % nodes.length])
+    for (let r = 0; r < ROWS.length; r++) {
+      for (let c = 0; c < COLS.length; c++) {
+        const i = r * COLS.length + c
+        if (c < COLS.length - 1) pairs.push([i, i + 1])
+        if (r < ROWS.length - 1) pairs.push([i, i + COLS.length])
+      }
     }
     return pairs.map(([a, b]) => {
       const from = nodes[a]
@@ -54,21 +81,39 @@ export default function Lattice() {
 
     const f = smooth(scrollState.finale)
     group.current.position.lerpVectors(HOME, FIN, f)
-    group.current.scale.setScalar(1 - f * 0.28)
+    group.current.scale.setScalar(0.9 - f * 0.22)
 
-    group.current.rotation.y += dt * 0.11
-    group.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.5) * 0.05
+    // A wall must not spin — a yaw sweep would swing the right column across
+    // the midline into the text. Gentle sway + per-plaque float instead.
+    const t = state.clock.elapsedTime
+    group.current.rotation.y = Math.sin(t * 0.4) * 0.035
+    group.current.rotation.x = Math.sin(t * 0.53) * 0.028
+    for (let i = 0; i < nodes.length; i++) {
+      const ch = group.current.children[i]
+      if (ch) ch.position.y = nodes[i].y + Math.sin(t * 0.7 + i * 1.7) * 0.07
+    }
+
+    // Mid-transit on narrow viewports the plaques would glare through the
+    // full-width text column: dim albedo + env reflections while travelling,
+    // restore once parked (the act stays visible, only the glare drops).
+    const transit = scrollState.transit || 0
+    const dim = 1 - 0.72 * transit
+    const envDim = 2.1 * (1 - 0.85 * transit)
+    for (const m of plaqueMats) {
+      m.color.setScalar(dim)
+      m.envMapIntensity = envDim
+    }
   })
 
   return (
     <group ref={group} position={HOME}>
       {nodes.map((p, i) => (
-        <group key={TECH[i]} position={p}>
+        <group key={TECH[i]} position={p} rotation={[0, 0.55, 0]}>
           <mesh material={plaqueMats[i]} castShadow>
-            <boxGeometry args={[1.9, 0.52, 0.1]} />
+            <boxGeometry args={[2.4, 0.62, 0.1]} />
           </mesh>
-          <mesh position={[0, 0, -0.12]} material={materials.steel}>
-            <cylinderGeometry args={[0.1, 0.1, 0.12, 16]} />
+          <mesh position={[0, 0, -0.16]} material={materials.steel}>
+            <cylinderGeometry args={[0.13, 0.13, 0.18, 16]} />
           </mesh>
         </group>
       ))}

@@ -22,7 +22,7 @@ const ROLES = [
 
 export default function Experience() {
   return (
-    <section className="band" id="experience">
+    <section className="band zig-l" id="experience">
       <div className="wrap">
         <div className="head">
           <h2>Where I&apos;ve worked</h2>

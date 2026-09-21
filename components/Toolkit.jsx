@@ -9,7 +9,7 @@ const GROUPS = [
 
 export default function Toolkit() {
   return (
-    <section className="band" id="toolkit">
+    <section className="band zig-r" id="toolkit">
       <div className="wrap">
         <div className="head">
           <h2>What I build with</h2>

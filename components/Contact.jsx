@@ -1,6 +1,6 @@
 export default function Contact() {
   return (
-    <section className="band contact" id="contact">
+    <section className="band contact zig-r" id="contact">
       <div className="wrap">
         <div className="head">
           <h2>Start a conversation</h2>

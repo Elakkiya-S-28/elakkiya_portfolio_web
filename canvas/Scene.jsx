@@ -5,8 +5,10 @@ import Lighting from './Lighting'
 import CameraRig from './CameraRig'
 import Colonnade from './Colonnade'
 import Device from './Device'
+import StackBoard from './StackBoard'
 import Lattice from './Lattice'
 import CareerPath from './CareerPath'
+import Composer from './Composer'
 
 export default function Scene({ reduced }) {
   return (
@@ -19,10 +21,14 @@ export default function Scene({ reduced }) {
       <Lighting />
       <CameraRig reduced={reduced} />
 
+      {/* the stage itself: floor, ceiling, glass wall — and the hero columns
+          that reposition into the journey corridor behind the act visuals */}
       <Colonnade />
       <Device />
+      <StackBoard />
       <Lattice />
       <CareerPath />
+      <Composer />
     </>
   )
 }

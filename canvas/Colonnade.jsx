@@ -59,6 +59,10 @@ export default function Colonnade() {
 
     if (group.current) {
       group.current.visible = archReveal.current > 0.015 || journeyReveal.current > 0.015
+      // The journey act frames LEFT (the approach text rail owns the right
+      // half): slide the whole colonnade — columns, walkway, plinths — into
+      // the left half as the journey rises. The hero act (j≈0) is untouched.
+      group.current.position.x = -6.5 * j
     }
   })
 
