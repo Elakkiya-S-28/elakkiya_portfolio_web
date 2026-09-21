@@ -12,16 +12,25 @@ const smooth = (v) => v * v * (3 - 2 * v)
 // layout in globals.css) and keeps the subject CLOSE to the lens so its
 // textures stay sharp at desktop viewing distance. Depth lives behind the
 // subject — the information is never pushed into the background.
+//
+//   hero       — phone composition owns the RIGHT ~58% (copy is left)
+//   about      — board orbit drifts right, About copy holds the left rail
+//   experience — timeline beam right, timeline copy left
+//   skills     — tech orbit LEFT, skills copy right
+//   projects   — card fan right, projects copy left
+//   approach   — quiet, no centrepiece: the camera simply pulls back
+//   contact    — the closing orb, centred behind the form
 const ACTS = [
-  { pos: [0.2, 1.0, 13.2], look: [0.55, 0.55, -2.0] },  // hero       — device right
-  { pos: [-0.4, 1.15, 11.5], look: [0.1, 0.9, -2.4] },  // approach   — board left
-  { pos: [0.2, 0.95, 13.4], look: [0.6, 0.55, -2.0] },  // work       — device right
-  { pos: [1.6, 1.25, 22.5], look: [-0.6, 1.0, 2.0] },   // toolkit    — lattice left
-  { pos: [0.2, 1.0, 9.8], look: [-1.6, 0.4, -2.0] },    // experience — rail right
-  { pos: [0.2, 1.1, 15.2], look: [-1.6, 0.65, 1.2] },   // contact    — composer left
+  { pos: [0.1, 0.95, 12.6], look: [1.7, 0.35, 0.4] },   // hero
+  { pos: [0.9, 1.15, 14.4], look: [2.1, 0.6, -1.6] },   // about
+  { pos: [0.2, 0.85, 13.0], look: [2.0, 0.3, -1.4] },   // experience
+  { pos: [1.5, 1.1, 13.4], look: [-2.2, 0.5, -0.6] },   // skills
+  { pos: [-0.6, 0.9, 12.0], look: [2.0, 0.2, 1.2] },    // projects
+  { pos: [0.2, 1.3, 15.5], look: [-0.4, 0.7, -2.5] },   // approach
+  { pos: [0.2, 1.0, 13.6], look: [-0.6, 0.4, -1.0] },   // contact
 ]
 // +1 = the act's visual lives in the right screen half, −1 = the left half.
-const SIDES = [1, -1, 1, -1, 1, -1]
+const SIDES = [1, -1, 1, -1, 1, -1, 1]
 
 export default function CameraRig({ reduced = false }) {
   const { camera } = useThree()
@@ -33,10 +42,14 @@ export default function CameraRig({ reduced = false }) {
   const lastAct = useRef(0)
   const pulse = useRef(0)
   const transitEased = useRef(0)
+  const breatheT = useRef(0)
 
   useFrame((_, dt) => {
     const d = Math.min(dt, 0.05)
-    const damp = 1 - Math.pow(reduced ? 0.00005 : 0.0002, d)
+    // Cinematic dolly damping. The residual gap shrinks by `base`^seconds, so
+    // base 0.15 ≈ 0.55s time constant — the camera settles over ~1.5s with a
+    // long, graceful tail instead of snapping into pose.
+    const damp = 1 - Math.pow(reduced ? 0.00005 : 0.15, d)
 
     const act = Math.min(Math.max(scrollState.act || 0, 0), ACTS.length - 1.001)
     const i = Math.floor(act)
@@ -62,9 +75,19 @@ export default function CameraRig({ reduced = false }) {
       lookT.x *= 0.55
     }
 
+    // Barely-there breathing micro-animation when parked in an act — a slow
+    // ±0.03 sine that keeps the frame alive without ever calling attention
+    if (!reduced) {
+      breatheT.current += d * 0.22
+      const breathe = Math.sin(breatheT.current) * 0.03 * (1 - Math.abs(frac * 2 - 1))
+      posT.y += breathe
+    }
+
+    // Gentle pointer parallax: a few degrees of depth, not a camera move.
+    // Reduced from the earlier values so text reading is never disturbed.
     const par = narrow || reduced ? 0 : 1
-    posT.x += scrollState.mx * 0.4 * par
-    posT.y += -scrollState.my * 0.26 * par
+    posT.x += scrollState.mx * 0.24 * par
+    posT.y += -scrollState.my * 0.14 * par
 
     camera.position.lerp(posT, damp)
     look.current.lerp(lookT, damp)
@@ -76,7 +99,7 @@ export default function CameraRig({ reduced = false }) {
       pulse.current = 1
       lastAct.current = i
     }
-    pulse.current = Math.max(0, pulse.current - d * 1.5)
+    pulse.current = Math.max(0, pulse.current - d * 0.8)
     const bump = 4 * frac * (1 - frac)
     transitEased.current += (Math.max(bump, pulse.current) - transitEased.current) * damp
     scrollState.transit = transitEased.current

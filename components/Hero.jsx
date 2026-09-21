@@ -1,28 +1,32 @@
+'use client'
+
 export default function Hero() {
   return (
     <section className="band hero zig-l" id="hero">
       <div className="wrap">
-        <p className="status lift">
-          <i aria-hidden="true"></i> Available for new projects
+        <p className="eyebrow rise">HI, I&apos;M</p>
+        <h1 className="rise">
+          <span>Elakkiya</span>
+          <em>Selvarajan</em>
+        </h1>
+        <p className="hero__sub rise">
+          Frontend Developer &amp;<br />
+          React Native Engineer
         </p>
-        <h1 className="lift">Apps that hold up outside the demo.</h1>
-        <p className="hero__lede lift">
-          I&apos;m <b>Elakkiya Selvarajan</b>, a frontend developer with 2+ years building React
-          Native and web products that run in production — hospital appointment booking,
-          offline rupee payments, and personal finance tools. I work across the line where
-          backend logic meets the screen someone actually taps.
+        <p className="hero__lede rise">
+          3+ years building mobile, web, APIs and native integrations.
         </p>
-        <div className="actions lift">
-          <a className="btn btn--solid" href="mailto:selvarajanelakkiya@gmail.com">Email me</a>
-          <a className="btn btn--ghost" href="#work">See the work</a>
+        <div className="actions rise">
+          <a className="btn btn--solid" href="#projects">
+            View My Work <span aria-hidden="true">→</span>
+          </a>
+          <a className="btn btn--ghost" href="#contact">
+            Get in Touch
+          </a>
         </div>
-        <dl className="facts lift">
-          <div className="fact"><dt>Experience</dt><dd>2+ years</dd></div>
-          <div className="fact"><dt>Shipped</dt><dd>6 projects</dd></div>
-          <div className="fact"><dt>Platforms</dt><dd>iOS · Android · Web</dd></div>
-          <div className="fact"><dt>Based in</dt><dd>India</dd></div>
-        </dl>
       </div>
     </section>
   )
 }
+
+

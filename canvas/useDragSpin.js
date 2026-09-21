@@ -54,9 +54,12 @@ export default function useDragSpin({ side, isLive }) {
       const dtms = Math.max(8, now - lastT)
       const dx = e.clientX - lastX
       const dy = e.clientY - lastY
-      state.yaw.current += dx * 0.0052
-      state.pitch.current = Math.max(-0.5, Math.min(0.5, state.pitch.current + dy * 0.0032))
-      state.vyaw.current = (dx * 0.0052) / (dtms / 1000)
+      // Gentle, bounded drag: a slight turn of the object rather than a
+      // free 360° spin. Yaw clamps to ±0.45rad, pitch to ±0.2rad, so the
+      // composition always returns to a readable front-facing pose.
+      state.yaw.current = Math.max(-0.45, Math.min(0.45, state.yaw.current + dx * 0.0028))
+      state.pitch.current = Math.max(-0.2, Math.min(0.2, state.pitch.current + dy * 0.0016))
+      state.vyaw.current = (dx * 0.0028) / (dtms / 1000)
       lastX = e.clientX
       lastY = e.clientY
       lastT = now
@@ -95,6 +98,6 @@ export function stepDrag(drag, dt, live) {
     return
   }
   drag.yaw.current += drag.vyaw.current * d
-  drag.vyaw.current *= Math.exp(-2.4 * d)
+  drag.vyaw.current *= Math.exp(-3.4 * d)
   if (Math.abs(drag.vyaw.current) < 0.02) drag.vyaw.current = 0
 }
